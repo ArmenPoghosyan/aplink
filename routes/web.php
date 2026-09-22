@@ -15,6 +15,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/cloud/google', function () {
+    return response()->json('Hello, Google Cloud!');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -28,4 +32,4 @@ Route::middleware('auth')->group(function () {
         ->name('connected-applications.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
