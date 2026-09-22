@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
                 'scopes' => $parameters['scopes'],
                 'authToken' => $parameters['authToken'],
                 'state' => $parameters['request']->query('state', ''),
+                'csrfToken' => csrf_token(),
             ])
         );
     }

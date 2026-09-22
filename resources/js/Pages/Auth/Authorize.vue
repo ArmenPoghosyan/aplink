@@ -2,30 +2,16 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 
-const props = defineProps({
+defineProps({
     client: Object,
     user: Object,
     scopes: Array,
     authToken: String,
     state: String,
+    csrfToken: String,
 });
-
-const approveForm = useForm({
-    state: props.state,
-    client_id: props.client.id,
-    auth_token: props.authToken,
-});
-
-const denyForm = useForm({
-    state: props.state,
-    client_id: props.client.id,
-    auth_token: props.authToken,
-});
-
-const approve = () => approveForm.post('/oauth/authorize');
-const deny = () => denyForm.delete('/oauth/authorize');
 </script>
 
 <template>
@@ -48,17 +34,32 @@ const deny = () => denyForm.delete('/oauth/authorize');
             </ul>
         </div>
 
+        <!--
+            These are plain (non-Inertia) form submissions on purpose.
+            Passport responds to approval/denial with a 302 redirect to the
+            third-party client's own redirect_uri (an external origin), and
+            that must be a full browser navigation. An Inertia/XHR request
+            would follow the redirect internally and never navigate the
+            browser away, so it must not be intercepted with JS here.
+        -->
         <div class="mt-4 flex justify-end gap-3">
-            <form @submit.prevent="deny">
-                <SecondaryButton :disabled="denyForm.processing">
-                    Cancel
-                </SecondaryButton>
+            <form method="POST" action="/oauth/authorize">
+                <input type="hidden" name="_token" :value="csrfToken" />
+                <input type="hidden" name="_method" value="DELETE" />
+                <input type="hidden" name="state" :value="state" />
+                <input type="hidden" name="client_id" :value="client.id" />
+                <input type="hidden" name="auth_token" :value="authToken" />
+
+                <SecondaryButton type="submit">Cancel</SecondaryButton>
             </form>
 
-            <form @submit.prevent="approve">
-                <PrimaryButton :disabled="approveForm.processing">
-                    Authorize
-                </PrimaryButton>
+            <form method="POST" action="/oauth/authorize">
+                <input type="hidden" name="_token" :value="csrfToken" />
+                <input type="hidden" name="state" :value="state" />
+                <input type="hidden" name="client_id" :value="client.id" />
+                <input type="hidden" name="auth_token" :value="authToken" />
+
+                <PrimaryButton type="submit">Authorize</PrimaryButton>
             </form>
         </div>
     </GuestLayout>
