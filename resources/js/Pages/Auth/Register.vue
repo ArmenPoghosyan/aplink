@@ -1,10 +1,7 @@
 <script setup>
+import { Head, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { link_to } from '@/composables/use_link';
 
 const form = useForm({
     name: '',
@@ -21,93 +18,73 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout title="Create your account" subtitle="One account for every connected app.">
         <Head title="Register" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
+        <q-form class="q-gutter-y-md" @submit="submit">
+            <q-input
+                v-model="form.name"
+                outlined
+                label="Name"
+                autocomplete="name"
+                autofocus
+                :error="!!form.errors.name"
+                :error-message="form.errors.name"
+            >
+                <template #prepend><q-icon name="sym_r_badge" /></template>
+            </q-input>
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+            <q-input
+                v-model="form.email"
+                outlined
+                type="email"
+                label="Email"
+                autocomplete="username"
+                :error="!!form.errors.email"
+                :error-message="form.errors.email"
+            >
+                <template #prepend><q-icon name="sym_r_mail" /></template>
+            </q-input>
 
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+            <q-input
+                v-model="form.password"
+                outlined
+                type="password"
+                label="Password"
+                autocomplete="new-password"
+                :error="!!form.errors.password"
+                :error-message="form.errors.password"
+            >
+                <template #prepend><q-icon name="sym_r_lock" /></template>
+            </q-input>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+            <q-input
+                v-model="form.password_confirmation"
+                outlined
+                type="password"
+                label="Confirm password"
+                autocomplete="new-password"
+                :error="!!form.errors.password_confirmation"
+                :error-message="form.errors.password_confirmation"
+            >
+                <template #prepend><q-icon name="sym_r_lock" /></template>
+            </q-input>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
+            <q-btn
+                type="submit"
+                color="primary"
+                label="Create account"
+                size="lg"
+                no-caps
+                unelevated
+                class="full-width"
+                :loading="form.processing"
+            />
+        </q-form>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
-            </div>
-        </form>
+        <template #footer>
+            <span class="text-muted">Already registered?</span>
+            <q-btn flat dense no-caps color="primary" label="Log in" v-bind="link_to(route('login'))" />
+        </template>
     </GuestLayout>
 </template>

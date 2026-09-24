@@ -1,8 +1,7 @@
 <script setup>
 import { computed } from 'vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     status: {
@@ -16,46 +15,38 @@ const submit = () => {
     form.post(route('verification.send'));
 };
 
-const verificationLinkSent = computed(
+const log_out = () => router.post(route('logout'));
+
+const verification_link_sent = computed(
     () => props.status === 'verification-link-sent',
 );
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout title="Verify your email">
         <Head title="Email Verification" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Thanks for signing up! Before getting started, could you verify your
-            email address by clicking on the link we just emailed to you? If you
-            didn't receive the email, we will gladly send you another.
+        <div class="text-body2 text-muted q-mb-md">
+            Thanks for signing up! Before getting started, please verify your email address by clicking
+            the link we just emailed to you. If you didn't receive the email, we'll gladly send you another.
         </div>
 
-        <div
-            class="mb-4 text-sm font-medium text-green-600"
-            v-if="verificationLinkSent"
-        >
-            A new verification link has been sent to the email address you
-            provided during registration.
-        </div>
+        <q-banner v-if="verification_link_sent" rounded class="bg-positive text-white q-mb-md">
+            A new verification link has been sent to the email address you provided during registration.
+        </q-banner>
 
-        <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Resend Verification Email
-                </PrimaryButton>
-
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >Log Out</Link
-                >
+        <q-form @submit="submit">
+            <div class="row items-center justify-between q-gutter-y-sm">
+                <q-btn
+                    type="submit"
+                    color="primary"
+                    label="Resend verification email"
+                    no-caps
+                    unelevated
+                    :loading="form.processing"
+                />
+                <q-btn flat no-caps label="Log out" @click="log_out" />
             </div>
-        </form>
+        </q-form>
     </GuestLayout>
 </template>

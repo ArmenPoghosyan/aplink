@@ -1,6 +1,8 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
 
 export default defineConfig({
     plugins: [
@@ -11,10 +13,16 @@ export default defineConfig({
         vue({
             template: {
                 transformAssetUrls: {
+                    ...transformAssetUrls,
                     base: null,
                     includeAbsolute: false,
                 },
             },
+        }),
+        quasar({
+            sassVariables: fileURLToPath(
+                new URL('./resources/css/quasar-variables.scss', import.meta.url),
+            ),
         }),
     ],
 });

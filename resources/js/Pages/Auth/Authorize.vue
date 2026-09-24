@@ -1,8 +1,6 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Head } from '@inertiajs/vue3';
+import GuestLayout from '@/Layouts/GuestLayout.vue';
 
 defineProps({
     client: Object,
@@ -15,23 +13,29 @@ defineProps({
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout title="Authorize application">
         <Head title="Authorize Application" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            <strong>{{ client.name }}</strong> is requesting permission to
-            access your APLink account (<strong>{{ user.email }}</strong>).
+        <div class="row items-center no-wrap q-gutter-x-md q-mb-md">
+            <q-avatar rounded color="primary" text-color="white" size="48px">
+                {{ client.name.charAt(0).toUpperCase() }}
+            </q-avatar>
+            <div class="text-body2">
+                <strong>{{ client.name }}</strong> is requesting permission to access your APLink account
+                <span class="text-muted">({{ user.email }})</span>.
+            </div>
         </div>
 
-        <div v-if="scopes.length > 0" class="mb-4">
-            <p class="mb-2 text-sm font-medium text-gray-700">
-                This application will be able to:
-            </p>
-            <ul class="list-inside list-disc space-y-1 text-sm text-gray-600">
-                <li v-for="scope in scopes" :key="scope.id">
-                    {{ scope.description }}
-                </li>
-            </ul>
+        <div v-if="scopes.length > 0">
+            <div class="text-subtitle2 q-mb-xs">This application will be able to:</div>
+            <q-list dense>
+                <q-item v-for="scope in scopes" :key="scope.id" class="q-px-none">
+                    <q-item-section avatar style="min-width: 32px">
+                        <q-icon name="sym_r_check_circle" color="positive" />
+                    </q-item-section>
+                    <q-item-section>{{ scope.description }}</q-item-section>
+                </q-item>
+            </q-list>
         </div>
 
         <!--
@@ -42,7 +46,7 @@ defineProps({
             would follow the redirect internally and never navigate the
             browser away, so it must not be intercepted with JS here.
         -->
-        <div class="mt-4 flex justify-end gap-3">
+        <div class="row justify-end q-gutter-sm q-mt-lg">
             <form method="POST" action="/oauth/authorize">
                 <input type="hidden" name="_token" :value="csrfToken" />
                 <input type="hidden" name="_method" value="DELETE" />
@@ -50,7 +54,7 @@ defineProps({
                 <input type="hidden" name="client_id" :value="client.id" />
                 <input type="hidden" name="auth_token" :value="authToken" />
 
-                <SecondaryButton type="submit">Cancel</SecondaryButton>
+                <q-btn type="submit" flat no-caps label="Cancel" />
             </form>
 
             <form method="POST" action="/oauth/authorize">
@@ -59,7 +63,7 @@ defineProps({
                 <input type="hidden" name="client_id" :value="client.id" />
                 <input type="hidden" name="auth_token" :value="authToken" />
 
-                <PrimaryButton type="submit">Authorize</PrimaryButton>
+                <q-btn type="submit" color="primary" unelevated no-caps label="Authorize" />
             </form>
         </div>
     </GuestLayout>

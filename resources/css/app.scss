@@ -1,0 +1,93 @@
+// Small set of app-wide styles layered on top of Quasar.
+
+body {
+    -webkit-font-smoothing: antialiased;
+    background: #f5f6fa;
+}
+
+body.body--dark {
+    background: $dark-page;
+}
+
+// Soft, borderless card used across the app
+.app-card {
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px rgba(16, 24, 40, 0.06);
+}
+
+.body--dark .app-card {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+// Translucent header that blurs content behind it
+.app-header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: saturate(180%) blur(12px);
+    color: #1f2330;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.body--dark .app-header {
+    background: rgba(13, 16, 23, 0.75);
+    color: #e6e8ee;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.text-muted {
+    opacity: 0.7;
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, $primary, $accent 60%, $secondary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+// Decorative glow behind hero and auth screens
+.app-glow {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -40% -20% auto -20%;
+        height: 80%;
+        background:
+            radial-gradient(closest-side, rgba(37, 205, 230, 0.22), transparent),
+            radial-gradient(closest-side, rgba(42, 113, 141, 0.16), transparent) 40% 20% / 60% 60% no-repeat;
+        pointer-events: none;
+        z-index: 0;
+    }
+}
+
+// Lift direct children above the glow; :where() keeps specificity at zero
+// so Quasar positioning classes (e.g. absolute-top-right) still apply.
+:where(.app-glow > *) {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 8vw, 4.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+}
+
+.max-width-sm {
+    width: 100%;
+    max-width: 440px;
+}
+
+.max-width-lg {
+    width: 100%;
+    max-width: 880px;
+}
+
+.max-width-xl {
+    width: 100%;
+    max-width: 1200px;
+}

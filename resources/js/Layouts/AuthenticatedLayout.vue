@@ -1,198 +1,139 @@
 <script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
+import AppLogo from '@/Components/AppLogo.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import { link_to } from '@/composables/use_link';
 
-const showingNavigationDropdown = ref(false);
+defineProps({
+    title: {
+        type: String,
+        default: '',
+    },
+    subtitle: {
+        type: String,
+        default: '',
+    },
+});
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+const user_initial = computed(() => user.value.name.charAt(0).toUpperCase());
+
+const drawer_open = ref(false);
+
+const nav_items = [
+    { label: 'Dashboard', icon: 'sym_r_space_dashboard', route_name: 'dashboard' },
+    { label: 'Profile', icon: 'sym_r_person', route_name: 'profile.edit' },
+];
+
+const log_out = () => router.post(route('logout'));
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
-                                </Link>
-                            </div>
+    <q-layout view="hHh lpR fFf">
+        <q-header class="app-header">
+            <q-toolbar class="max-width-xl q-mx-auto q-px-md" style="min-height: 64px">
+                <q-btn
+                    flat
+                    round
+                    icon="sym_r_menu"
+                    class="lt-sm q-mr-sm"
+                    aria-label="Open menu"
+                    @click="drawer_open = !drawer_open"
+                />
 
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
+                <a v-bind="link_to(route('dashboard'))" style="text-decoration: none; color: inherit">
+                    <AppLogo height="36px" />
+                </a>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
+                <q-tabs
+                    shrink
+                    no-caps
+                    inline-label
+                    indicator-color="primary"
+                    active-color="primary"
+                    class="gt-xs q-ml-xl"
+                    :model-value="route().current()"
                 >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
+                    <q-tab
+                        v-for="item in nav_items"
+                        :key="item.route_name"
+                        :name="item.route_name"
+                        :icon="item.icon"
+                        :label="item.label"
+                        @click="router.visit(route(item.route_name))"
+                    />
+                </q-tabs>
+
+                <q-space />
+
+                <ThemeToggle />
+
+                <q-btn flat no-caps class="q-ml-sm q-px-sm">
+                    <q-avatar size="32px" color="primary" text-color="white">{{ user_initial }}</q-avatar>
+                    <span class="gt-xs q-ml-sm">{{ user.name }}</span>
+                    <q-icon name="sym_r_expand_more" size="20px" class="q-ml-xs" />
+
+                    <q-menu anchor="bottom right" self="top right" :offset="[0, 8]">
+                        <q-list style="min-width: 220px">
+                            <q-item>
+                                <q-item-section>
+                                    <q-item-label class="text-weight-medium">{{ user.name }}</q-item-label>
+                                    <q-item-label caption>{{ user.email }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                            <q-separator />
+                            <q-item v-close-popup clickable v-bind="link_to(route('profile.edit'))">
+                                <q-item-section avatar><q-icon name="sym_r_person" /></q-item-section>
+                                <q-item-section>Profile</q-item-section>
+                            </q-item>
+                            <q-item v-close-popup clickable @click="log_out">
+                                <q-item-section avatar><q-icon name="sym_r_logout" /></q-item-section>
+                                <q-item-section>Log out</q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-menu>
+                </q-btn>
+            </q-toolbar>
+        </q-header>
+
+        <!-- Mobile navigation -->
+        <q-drawer v-model="drawer_open" overlay behavior="mobile" :width="260">
+            <div class="q-pa-md">
+                <AppLogo height="36px" />
+            </div>
+            <q-list padding>
+                <q-item
+                    v-for="item in nav_items"
+                    :key="item.route_name"
+                    clickable
+                    :active="route().current(item.route_name)"
+                    active-class="text-primary"
+                    v-bind="link_to(route(item.route_name))"
+                >
+                    <q-item-section avatar><q-icon :name="item.icon" /></q-item-section>
+                    <q-item-section>{{ item.label }}</q-item-section>
+                </q-item>
+                <q-separator spaced />
+                <q-item clickable @click="log_out">
+                    <q-item-section avatar><q-icon name="sym_r_logout" /></q-item-section>
+                    <q-item-section>Log out</q-item-section>
+                </q-item>
+            </q-list>
+        </q-drawer>
+
+        <q-page-container>
+            <q-page class="q-px-md q-py-xl">
+                <div class="max-width-xl q-mx-auto">
+                    <div v-if="title" class="q-mb-lg">
+                        <div class="text-h4 text-weight-bold">{{ title }}</div>
+                        <div v-if="subtitle" class="text-body1 text-muted q-mt-xs">{{ subtitle }}</div>
                     </div>
 
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
-                    >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
+                    <slot />
                 </div>
-            </nav>
-
-            <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
-
-            <!-- Page Content -->
-            <main>
-                <slot />
-            </main>
-        </div>
-    </div>
+            </q-page>
+        </q-page-container>
+    </q-layout>
 </template>
