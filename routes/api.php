@@ -9,6 +9,6 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('device')->prefix('device')->group(function () {
 	Route::get('/ping', function (Request $request) {
-		return response()->json(['device' => $request->attributes->get('device')->name]);
+		return response()->json(['device' => $request->all()]);
 	});
 });
