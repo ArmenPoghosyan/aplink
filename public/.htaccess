@@ -1,14 +1,3 @@
-# Device routes: ask for the client certificate (self-signed is fine, Laravel checks
-# its fingerprint) and hand it to PHP as SSL_CLIENT_CERT. Needs AllowOverride AuthConfig Options.
-# Set per directory, so Apache renegotiates the TLS connection to request it.
-<IfModule mod_ssl.c>
-    <If "%{REQUEST_URI} =~ m#^/api/device(/|$)#">
-        SSLVerifyClient optional_no_ca
-        SSLVerifyDepth 1
-        SSLOptions +StdEnvVars +ExportCertData
-    </If>
-</IfModule>
-
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
