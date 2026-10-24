@@ -28,9 +28,9 @@ class AuthenticateDevice
 
 		$fingerprint = $pem === '' ? false : openssl_x509_fingerprint($pem, 'sha256');
 
-		// logger($fingerprint);
-		dump(compact('fingerprint'));
-		dd(collect($request->server())->filter(fn($v, $k) => str_starts_with($k, 'SSL_'))->keys());
+		logger($fingerprint);
+		// dump(compact('fingerprint'));
+		logger(collect($request->server())->filter(fn($v, $k) => str_starts_with($k, 'SSL_'))->keys());
 		// $device = $fingerprint ? Device::where('fingerprint', $fingerprint)->first() : null;
 
 		// if (! $device) {
