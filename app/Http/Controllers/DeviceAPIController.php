@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Models\{Board};
+use Illuminate\Http\{JsonResponse, Request};
 
 class DeviceAPIController extends Controller
 {
@@ -15,9 +15,37 @@ class DeviceAPIController extends Controller
 	 */
 	public function iam(Request $request)
 	{
-		$fingerprint = $request->fingerprint;
+		$validated = $request->validate([
+			'board'				=> 'required|array',
+			'board.name'		=> 'required|string|max:255',
+			'board.board'		=> 'required|string|max:255',
+			'board.hw_version'	=> 'required|string|max:255',
+			'board.sw_version'	=> 'required|string|max:255',
+			'board.mac_address'	=> 'required|string|max:17',
+		]);
 
-		return response()->json(compact('fingerprint'));
+		$board_details = $validated['board'];
+
+		$board = Board::fingerprint($request->fingerprint)->firstOrCreate([
+			'uuid'			=> 1,
+			'fingerprint'	=> $request->fingerprint,
+			'mac_address'	=> $board_details['mac_address'],
+			'name'			=> $board_details['name'],
+			'board'			=> $board_details['board'],
+			'hw_version'	=> $board_details['hw_version'],
+			'sw_version'	=> $board_details['sw_version'],
+			'is_trusted'	=> false
+		]);
+
+		if ($board->is_trusted) {
+			return success([
+				'message'	=> 'The board is trusted'
+			]);
+		}
+
+		return fail([
+			'message'	=> 'The board is not trusted'
+		]);
 	}
 
 	/**

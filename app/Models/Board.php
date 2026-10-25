@@ -34,4 +34,16 @@ class Board extends Model
 	{
 		return $query->where('is_trusted', true);
 	}
+
+	/**
+	 * Filter with fingerprint
+	 *
+	 * @param mixed $query
+	 * @param string $fingerprint
+	 * @return mixed
+	 */
+	public function scopeFingerprint(mixed $query, string $fingerprint)
+	{
+		return $query->where('fingerprint', $fingerprint);
+	}
 }
