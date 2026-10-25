@@ -13,12 +13,6 @@ class Ability extends Model
 	const BRIGHTNESS	= 2;
 	const COLOR			= 3;
 
-	const ABILITIES		= [
-		self::ON_OFF		=> 'on_off',
-		self::BRIGHTNESS	=> 'brightness',
-		self::COLOR			=> 'color'
-	];
-
 	/**
 	 * Get Ability ID by the field name
 	 *
@@ -27,7 +21,8 @@ class Ability extends Model
 	 */
 	public static function get_ability_id(string $field)
 	{
-		return array_search($field, self::ABILITIES, true);
+		$fields = array_map(fn($ability) => $ability['field'], config('abilities', []));
+		return array_search($field, $fields, true);
 	}
 
 	/**
@@ -38,7 +33,7 @@ class Ability extends Model
 	 */
 	public static function get_ability_field(int $id)
 	{
-		return self::ABILITIES[$id] ?? null;
+		return config("abilities.{$id}.field");
 	}
 
 	/**
@@ -50,12 +45,15 @@ class Ability extends Model
 	 */
 	public static function convert_type(string|int $field, mixed $value)
 	{
-		$field = is_string($field) ? self::get_ability_id($field) : $field;
+		$ability_id	= is_string($field) ? self::get_ability_id($field) : $field;
+		$config		= config("abilities.{$ability_id}", null);
 
-		return match ($field) {
-			self::ON_OFF		=> (bool)$value,
-			self::BRIGHTNESS	=> (int)$value,
-			self::COLOR			=> (int)$value,
+		if (!$config) return $value;
+
+		return match ($config['type']) {
+			'bool', 'boolean'	=> (bool)$value,
+			'int', 'integer'	=> (int)$value,
+			'string'			=> (string)$value,
 			default				=> $value
 		};
 	}
