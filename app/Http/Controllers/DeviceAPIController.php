@@ -25,15 +25,15 @@ class DeviceAPIController extends Controller
 			'board.mac_address'		=> 'required|string|max:17',
 
 			'devices'				=> 'required|array',
-			'devices.name'			=> 'required|string|max:255',
-			'devices.type'			=> 'required|integer|gt:0',
-			'devices.passive'		=> 'required|boolean',
-			'devices.reportable'	=> 'required|boolean',
+			'devices.*.name'			=> 'required|string|max:255',
+			'devices.*.type'			=> 'required|integer|gt:0',
+			'devices.*.passive'		=> 'required|boolean',
+			'devices.*.reportable'	=> 'required|boolean',
 
-			'devices.abilities'		=> 'required|array',
-			'devices.abilities.*'	=> 'required|integer|gt:1',
+			'devices.*.abilities'		=> 'required|array',
+			'devices.*.abilities.*'	=> 'required|integer|gt:1',
 
-			'devices.state'			=> 'required|array',
+			'devices.*.state'			=> 'required|array',
 		]);
 
 		$board_details = $validated['board'];
