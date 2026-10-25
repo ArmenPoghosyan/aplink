@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Board};
+use App\Models\{Board, Device};
 use Illuminate\Http\{JsonResponse, Request};
 use Illuminate\Support\Str;
 
@@ -17,16 +17,28 @@ class DeviceAPIController extends Controller
 	public function iam(Request $request)
 	{
 		$validated = $request->validate([
-			'board'				=> 'required|array',
-			'board.name'		=> 'required|string|max:255',
-			'board.board'		=> 'required|string|max:255',
-			'board.hw_version'	=> 'required|string|max:255',
-			'board.sw_version'	=> 'required|string|max:255',
-			'board.mac_address'	=> 'required|string|max:17',
+			'board'					=> 'required|array',
+			'board.name'			=> 'required|string|max:255',
+			'board.board'			=> 'required|string|max:255',
+			'board.hw_version'		=> 'required|string|max:255',
+			'board.sw_version'		=> 'required|string|max:255',
+			'board.mac_address'		=> 'required|string|max:17',
+
+			'devices'				=> 'required|array',
+			'devices.name'			=> 'required|string|max:255',
+			'devices.type'			=> 'required|integer|gt:0',
+			'devices.passive'		=> 'required|boolean',
+			'devices.reportable'	=> 'required|boolean',
+
+			'devices.abilities'		=> 'required|array',
+			'devices.abilities.*'	=> 'required|integer|gt:1',
+
+			'devices.state'			=> 'required|array',
 		]);
 
 		$board_details = $validated['board'];
 
+		/** @var Board */
 		$board = Board::firstOrCreate(
 			['fingerprint' => $request->fingerprint,],
 			[
@@ -41,9 +53,21 @@ class DeviceAPIController extends Controller
 		);
 
 		if ($board->is_trusted) {
-			return success([
-				'message'	=> 'The board is trusted'
-			]);
+			$devices = $validated['devices'];
+
+			foreach ($devices as $device_id => $device_details) {
+				/** @var Device */
+				$device = $board->devices()->firstOrCreate(
+					['internal_id'	=> $device_id],
+					[
+						'uuid'			=> Str::orderedUuid(),
+						'name'			=> $device_details['name'],
+						'is_passive'	=> $device_details['passive'],
+						'is_reportable'	=> $device_details['reportable'],
+						'type'			=> $device_details['type'],
+					]
+				);
+			}
 		}
 
 		return fail([
