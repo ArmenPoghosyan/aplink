@@ -30,6 +30,6 @@ return Application::configure(basePath: dirname(__DIR__))
 	})
 	->withExceptions(function (Exceptions $exceptions): void {
 		$exceptions->shouldRenderJsonWhen(
-			fn(Request $request) => $request->is('api/*') || $request->getHost() === config('app.device_domain') || $request->expectsJson(),
+			fn(Request $request) => $request->is('api/*') || $request->getHost() === config('app.devices_domain') || $request->expectsJson(),
 		);
 	})->create();
