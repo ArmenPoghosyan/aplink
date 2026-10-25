@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Board, Device};
+use App\Models\{Ability, Board, Device};
 use Illuminate\Http\{JsonResponse, Request};
 use Illuminate\Support\Str;
 
@@ -85,7 +85,7 @@ class DeviceAPIController extends Controller
 						);
 					}
 				} else {
-					$current_state[$device->internal_id] = $device->states->pluck('value', 'field');
+					$current_state[$device->internal_id] = $device->get_states();
 				}
 			}
 

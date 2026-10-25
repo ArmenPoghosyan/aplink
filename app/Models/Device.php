@@ -46,4 +46,23 @@ class Device extends Model
 	{
 		return $this->hasMany(DeviceState::class);
 	}
+
+	/**
+	 * Get State array
+	 *
+	 * @param bool $convert
+	 * @return array
+	 */
+	public function get_states($convert = true)
+	{
+		$states = $this->states->pluck('value', 'field');
+
+		if ($convert) {
+			$states = $states->mapWithKeys(function ($field, $value) {
+				return [$field => Ability::convert_type($field, $value)];
+			});
+		}
+
+		return $states;
+	}
 }
