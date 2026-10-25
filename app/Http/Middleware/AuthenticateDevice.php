@@ -31,7 +31,7 @@ class AuthenticateDevice
 			return abort(403);
 		}
 
-		$request->attributes->set('fingerprint', $fingerprint);
+		$request->merge(['fingerprint' => $fingerprint]);
 
 		return $next($request);
 	}
