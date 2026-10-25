@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\DeviceAPIController;
 use Illuminate\Support\Facades\Route;
 
-// Served only on the device host (see bootstrap/app.php); the 'device' middleware identifies the caller.
-Route::get('/ping', function (Request $request) {
-	return response()->json(['device' => $request->fingerprint]);
-});
+Route::get('iam',	[DeviceAPIController::class, 'iam']);
+Route::get('alive',	[DeviceAPIController::class, 'live']);
