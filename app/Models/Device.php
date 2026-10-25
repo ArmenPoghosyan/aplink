@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany};
 
 class Device extends Model
 {
@@ -21,5 +21,17 @@ class Device extends Model
 	public function board()
 	{
 		return $this->belongsTo(Board::class);
+	}
+
+	/** @return BelongsToMany */
+	public function abilities()
+	{
+		return $this->belongsToMany(Ability::class);
+	}
+
+	/** @return HasMany */
+	public function states()
+	{
+		return $this->hasMany(DeviceState::class);
 	}
 }

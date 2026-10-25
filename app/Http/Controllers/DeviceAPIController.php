@@ -32,7 +32,7 @@ class DeviceAPIController extends Controller
 			'devices.*.reportable'	=> 'required|boolean',
 
 			'devices.*.abilities'	=> 'required|array',
-			'devices.*.abilities.*'	=> 'required|integer|gt:0',
+			'devices.*.abilities.*'	=> 'required|integer|exists:abilities,id',
 
 			'devices.*.state'		=> 'required|array',
 		]);
@@ -56,6 +56,7 @@ class DeviceAPIController extends Controller
 		if ($board->is_trusted) {
 			$devices = $validated['devices'];
 
+			//* Sync each device
 			foreach ($devices as $device_id => $device_details) {
 				/** @var Device */
 				$device = $board->devices()->firstOrCreate(
@@ -68,7 +69,20 @@ class DeviceAPIController extends Controller
 						'type'			=> $device_details['type'],
 					]
 				);
+
+				// * Sync the abilities
+				$device->abilities()->sync($device_details['abilities']);
+
+				// * Sync the states
+				foreach ($device_details['state'] as $field => $value) {
+					$device->states()->updateOrCreate(
+						['field'	=> $field],
+						['value'	=> $value],
+					);
+				}
 			}
+
+			return success();
 		}
 
 		return fail([
