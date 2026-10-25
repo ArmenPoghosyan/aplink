@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\{Board};
 use Illuminate\Http\{JsonResponse, Request};
+use Illuminate\Support\Str;
 
 class DeviceAPIController extends Controller
 {
@@ -26,16 +27,18 @@ class DeviceAPIController extends Controller
 
 		$board_details = $validated['board'];
 
-		$board = Board::fingerprint($request->fingerprint)->firstOrCreate([
-			'uuid'			=> 1,
-			'fingerprint'	=> $request->fingerprint,
-			'mac_address'	=> $board_details['mac_address'],
-			'name'			=> $board_details['name'],
-			'board'			=> $board_details['board'],
-			'hw_version'	=> $board_details['hw_version'],
-			'sw_version'	=> $board_details['sw_version'],
-			'is_trusted'	=> false
-		]);
+		$board = Board::firstOrCreate(
+			['fingerprint' => $request->fingerprint,],
+			[
+				'uuid'			=> Str::orderedUuid(),
+				'mac_address'	=> $board_details['mac_address'],
+				'name'			=> $board_details['name'],
+				'board'			=> $board_details['board'],
+				'hw_version'	=> $board_details['hw_version'],
+				'sw_version'	=> $board_details['sw_version'],
+				'is_trusted'	=> false
+			]
+		);
 
 		if ($board->is_trusted) {
 			return success([
