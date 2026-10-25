@@ -15,7 +15,7 @@ class DeviceAPIController extends Controller
 	 */
 	public function iam(Request $request)
 	{
-		$fingerprint = $request->fingerprint();
+		$fingerprint = $request->fingerprint;
 
 		return response()->json(compact('fingerprint'));
 	}
