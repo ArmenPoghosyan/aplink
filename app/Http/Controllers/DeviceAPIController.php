@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Ability, Board, Device};
+use App\Models\{Ability, Board, BoardChannel, Device};
 use Illuminate\Http\{JsonResponse, Request};
 use Illuminate\Support\Str;
 
@@ -54,12 +54,14 @@ class DeviceAPIController extends Controller
 		);
 
 		if ($board->is_trusted) {
-			$devices = $validated['devices'];
+			//* Generate the communication channel
+			$board_channel	= $board->generate_channel(BoardChannel::TYPE_MQTT);
 
+			//* State array to send back to board
 			$current_state	= [];
 
 			//* Sync each device
-			foreach ($devices as $device_id => $device_details) {
+			foreach ($validated['devices'] as $device_id => $device_details) {
 				/** @var Device */
 				$device = $board->devices()->firstOrCreate(
 					['internal_id'	=> $device_id],
@@ -85,18 +87,18 @@ class DeviceAPIController extends Controller
 						);
 					}
 				} else {
+					//* Give the current state to the device
 					$current_state[$device->internal_id] = $device->get_states();
 				}
 			}
 
 			return success([
-				'state'	=> $current_state
+				'state'		=> $current_state,
+				'channel'	=> $board_channel->channel,
 			]);
 		}
 
-		return fail([
-			'message'	=> 'The board is not trusted'
-		]);
+		return unauthorized();
 	}
 
 	/**

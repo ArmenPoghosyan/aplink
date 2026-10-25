@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{HasMany};
+use Illuminate\Database\Eloquent\Relations\{HasMany, HasOne};
 
 class Board extends Model
 {
@@ -24,6 +24,12 @@ class Board extends Model
 		return $this->hasMany(Device::class);
 	}
 
+	/** @return HasOne */
+	public function channel()
+	{
+		return $this->hasOne(BoardChannel::class);
+	}
+
 	/**
 	 * Get only trusted boards
 	 *
@@ -36,14 +42,28 @@ class Board extends Model
 	}
 
 	/**
-	 * Filter with fingerprint
+	 * Generate channel
 	 *
-	 * @param mixed $query
-	 * @param string $fingerprint
-	 * @return mixed
+	 * @param string $type
+	 * @return BoardChannel
 	 */
-	public function scopeFingerprint(mixed $query, string $fingerprint)
+	public function generate_channel(string $type = BoardChannel::TYPE_MQTT): BoardChannel
 	{
-		return $query->where('fingerprint', $fingerprint);
+		$channel = $this->channel;
+		$channel_string = BoardChannel::generate_channel_string();
+
+		if ($channel) {
+			$channel->update([
+				'type'		=> $type,
+				'channel'	=> $channel_string
+			]);
+		} else {
+			$channel = $this->channel()->create([
+				'type'		=> $type,
+				'channel'	=> $channel_string
+			]);
+		}
+
+		return $channel;
 	}
 }
