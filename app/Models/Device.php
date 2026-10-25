@@ -58,7 +58,7 @@ class Device extends Model
 		$states = $this->states->pluck('value', 'field');
 
 		if ($convert) {
-			$states = $states->mapWithKeys(function ($field, $value) {
+			$states = $states->mapWithKeys(function ($value, $field) {
 				return [$field => Ability::convert_type($field, $value)];
 			});
 		}
