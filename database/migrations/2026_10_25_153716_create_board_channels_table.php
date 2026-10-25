@@ -13,7 +13,7 @@ return new class extends Migration
 	{
 		Schema::create('board_channels', function (Blueprint $table) {
 			$table->id();
-			$table->foreignId('device_id')->constrained()
+			$table->foreignId('board_id')->constrained()
 				->cascadeOnDelete()->cascadeOnUpdate()
 				//
 			;
