@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
 		commands: __DIR__ . '/../routes/console.php',
 		health: '/up',
 		then: function () {
-			Route::domain(config('app.device_domain'))
+			Route::domain(config('app.devices_domain'))
 				->middleware('device')
 				->group(base_path('routes/device.php'));
 		},

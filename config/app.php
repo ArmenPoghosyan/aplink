@@ -55,7 +55,7 @@ return [
 	'url' => env('APP_URL', 'http://localhost'),
 
 	// Host that serves the device API; the web server asks only this host for client certificates.
-	'device_domain' => env('DEVICE_DOMAIN', 'device.localhost'),
+	'devices_domain' => env('DEVICES_DOMAIN', 'device.localhost'),
 
 	/*
     |--------------------------------------------------------------------------

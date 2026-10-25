@@ -25,19 +25,13 @@ class AuthenticateDevice
 	public function handle(Request $request, Closure $next): Response
 	{
 		$pem = rawurldecode((string) $request->server('SSL_CLIENT_CERT', ''));
-
 		$fingerprint = $pem === '' ? false : openssl_x509_fingerprint($pem, 'sha256');
 
-		logger($fingerprint);
-		// dump(compact('fingerprint'));
-		logger(collect($request->server())->filter(fn($v, $k) => str_starts_with($k, 'SSL_'))->keys());
-		// $device = $fingerprint ? Device::where('fingerprint', $fingerprint)->first() : null;
+		if (!$fingerprint) {
+			return abort(403);
+		}
 
-		// if (! $device) {
-		//     abort(401, 'Unknown or missing device certificate.');
-		// }
-
-		// $request->attributes->set('device', $device);
+		$request->attributes->set('fingerprint', $fingerprint);
 
 		return $next($request);
 	}
