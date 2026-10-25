@@ -56,6 +56,8 @@ class DeviceAPIController extends Controller
 		if ($board->is_trusted) {
 			$devices = $validated['devices'];
 
+			$current_state	= [];
+
 			//* Sync each device
 			foreach ($devices as $device_id => $device_details) {
 				/** @var Device */
@@ -73,16 +75,23 @@ class DeviceAPIController extends Controller
 				// * Sync the abilities
 				$device->abilities()->sync($device_details['abilities']);
 
-				// * Sync the states
-				foreach ($device_details['state'] as $field => $value) {
-					$device->states()->updateOrCreate(
-						['field'	=> $field],
-						['value'	=> $value],
-					);
+				// * If the device is not passive - update the states
+				if (!$device->is_passive) {
+					// * Sync the states
+					foreach ($device_details['state'] as $field => $value) {
+						$device->states()->updateOrCreate(
+							['field'	=> $field],
+							['value'	=> $value],
+						);
+					}
+				} else {
+					$current_state[$device->internal_id] = $device->states->pluck('value', 'field');
 				}
 			}
 
-			return success();
+			return success([
+				'state'	=> $current_state
+			]);
 		}
 
 		return fail([

@@ -17,6 +17,18 @@ class Device extends Model
 		'type',
 	];
 
+	protected $casts = [
+		'is_passive'	=> 'boolean',
+		'is_reportable'	=> 'boolean',
+	];
+
+	protected $hidden = [
+		'board_id',
+		'internal_id',
+		'is_passive',
+		'is_reportable'
+	];
+
 	/** @return BelongsTo */
 	public function board()
 	{
