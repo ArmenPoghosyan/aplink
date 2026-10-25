@@ -25,14 +25,14 @@ class DeviceAPIController extends Controller
 			'board.mac_address'		=> 'required|string|max:17',
 
 			'devices'				=> 'required|array',
-			'devices.*'				=> 'required|integer',
+			'devices.*'				=> 'required|array',
 			'devices.*.name'		=> 'required|string|max:255',
 			'devices.*.type'		=> 'required|integer|gt:0',
 			'devices.*.passive'		=> 'required|boolean',
 			'devices.*.reportable'	=> 'required|boolean',
 
 			'devices.*.abilities'	=> 'required|array',
-			'devices.*.abilities.*'	=> 'required|integer|gt:1',
+			'devices.*.abilities.*'	=> 'required|integer|gt:0',
 
 			'devices.*.state'		=> 'required|array',
 		]);
