@@ -26,7 +26,7 @@ class Device extends Model
 	/** @return BelongsToMany */
 	public function abilities()
 	{
-		return $this->belongsToMany(Ability::class);
+		return $this->belongsToMany(Ability::class, table: 'device_abilities');
 	}
 
 	/** @return HasMany */
